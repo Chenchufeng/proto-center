@@ -1,0 +1,37 @@
+before_script:
+  - echo '=================start build=================='
+after_script:
+  - echo '=================build finish=================='
+stages:
+  # 可将需要执行的脚本分为多个步骤，
+  # 注意，因A步骤生成的文件无法被B步骤使用，可以使用artifacts缓存
+  - build
+#  - B
+
+#  执行步骤A
+build_job:
+  stage: build
+  only:
+    #在哪个分支变动时自动执行该步骤
+    - master
+  script:
+    # 该步骤的脚本
+    - echo "=========A start=========="
+    - mvn package
+    - echo "=========A finish=========="
+  artifacts:
+    # 写在这里的文件可以进入缓存以被其他stage调用，有大小限制（100M）
+    paths:
+      - target/
+
+##  执行步骤B
+#B:
+#  stage: B
+#  only:
+#    - tags
+#    # - master
+#  script:
+#    - echo  "===========B start========"
+#    # $CI_PROJECT_DIR 为当前项目的根目录
+#    - cd $CI_PROJECT_DIR/target
+#    - echo  " ===========B finish========"
